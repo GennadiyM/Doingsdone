@@ -44,3 +44,22 @@ function esc($str) {
     $text = htmlspecialchars($str);
     return $text;
 }
+
+/**
+ * @param $date дата выполнения задачи
+ * @return bool вернет true если осталось меньше или 24 часов до выполнения задачи
+ */
+function check_burning_tasks($date, $time_limit) {
+    if ($date === "Нет") {
+        return false;
+    }
+    $second_in_hour = 3600;
+    $date_of_completion = strtotime($date);
+    $time_now = time();
+    $hours_to_complete = floor(($date_of_completion - $time_now)/$second_in_hour);
+    if ($hours_to_complete <= $time_limit) {
+        return true;
+    } else {
+        return false;
+    }
+}

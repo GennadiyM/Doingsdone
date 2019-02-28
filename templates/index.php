@@ -29,7 +29,8 @@
                     <?php foreach($task_list as $item) :
                         if ($show_complete_tasks == 0 and $item['status'] == 'Да') : continue;
                         endif; ?>
-                        <tr class="tasks__item task">
+                        <tr class="tasks__item task <?php if (check_burning_tasks($item['date'], $time_limit)) : echo $class_of_burning_tasks;
+                        endif; ?>">
                             <td class="task__select">
                                 <label class="checkbox task__checkbox">
                                     <input class="checkbox__input visually-hidden task__checkbox" type="checkbox" value="1"
@@ -44,7 +45,7 @@
                             <!--                            <a class="download-link" href="#">Home.psd</a>-->
                             <!--                        </td>-->
 
-                            <td class="task__date"><?=$item['date']?></td>
+                            <td class="task__date"><?=esc($item['date'])?></td>
                         </tr>
                     <?php endforeach; ?>
                 </table>
