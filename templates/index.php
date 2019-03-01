@@ -16,7 +16,6 @@
                     </nav>
 
                     <label class="checkbox">
-                        <!--добавить сюда аттрибут "checked", если переменная $show_complete_tasks равна единице-->
                         <input class="checkbox__input visually-hidden show_completed" type="checkbox"
                             <?php if ($show_complete_tasks == 1) : echo "checked";
                             endif; ?>
@@ -27,17 +26,17 @@
 
                 <table class="tasks">
                     <?php foreach($task_list as $item) :
-                        if ($show_complete_tasks == 0 and $item['status'] == 'Да') : continue;
+                        if ($show_complete_tasks == 0 and $item['status'] == '1') : continue;
                         endif; ?>
-                        <tr class="tasks__item task <?php if (check_burning_tasks($item['date'], $time_limit)) : echo $class_of_burning_tasks;
+                        <tr class="tasks__item task <?php if (check_burning_tasks($item['dt_doing'], $time_limit)) : echo $class_of_burning_tasks;
                         endif; ?>">
                             <td class="task__select">
                                 <label class="checkbox task__checkbox">
                                     <input class="checkbox__input visually-hidden task__checkbox" type="checkbox" value="1"
-                                        <?php if ($item['status'] == 'Да') : echo "checked";
+                                        <?php if ($item['status'] == '1') : echo "checked";
                                         endif; ?>
                                     >
-                                    <span class="checkbox__text"><?=esc($item['task'])?></span>
+                                    <span class="checkbox__text"><?=esc($item['name_task'])?></span>
                                 </label>
                             </td>
 
@@ -45,7 +44,7 @@
                             <!--                            <a class="download-link" href="#">Home.psd</a>-->
                             <!--                        </td>-->
 
-                            <td class="task__date"><?=esc($item['date'])?></td>
+                            <td class="task__date"><?=esc(date_arr_in_date_str($item['dt_doing']))?></td>
                         </tr>
                     <?php endforeach; ?>
                 </table>
