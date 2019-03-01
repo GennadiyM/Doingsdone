@@ -44,8 +44,9 @@
                     <ul class="main-navigation__list">
                         <?php foreach ($categories as $categories_item) : ;?>
                         <li class="main-navigation__list-item">
-                            <a class="main-navigation__list-item-link" href="#"><?=$categories_item['title'];?></a>
-                            <span class="main-navigation__list-item-count"><?=count_tasks($task_list, $categories_item['id']);?></span>
+                            <a class="main-navigation__list-item-link" href="/?cat=<?=$categories_item['id']?>"><?=$categories_item['title'];?></a>
+                            <?php $count_tasks_in_project = db_fetch_data($link, $sql_get_count_tasks_in_project, [$categories_item['id'], $user_id]);?>
+                            <span class="main-navigation__list-item-count"><?=$count_tasks_in_project[0]["count_tasks"];?></span>
                         </li>
                         <?php endforeach; ?>
                     </ul>
