@@ -1,22 +1,5 @@
 <?php
 /**
- * Счетчик задач соответствующий названию проекта
- *
- * @param $task_list список задач в виде массива
- * @param $project_id id проекта
- * @return int число задач для переданного проекта
- */
-function count_tasks($task_list, $project_id) {
-    $count = 0;
-    foreach ($task_list as $task_item) {
-        if ($task_item['project_id'] === $project_id) {
-            $count++;
-        }
-    }
-    return $count;
-}
-
-/**
  * Подключает шаблон, находящийся в заданной директории
  *
  * @param $name имя файла шаблона
