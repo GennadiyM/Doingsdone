@@ -6,10 +6,7 @@ require_once('config.php');
 $link = getConnection($db);
 $user_id = 1;
 
-$sql_get_categories = "SELECT projects.title, projects.id FROM projects WHERE projects.user_id = ?";
-$sql_get_task_list = "SELECT * FROM tasks WHERE tasks.user_id = ?";
 $sql_get_task_list_by_category = "SELECT * FROM tasks WHERE tasks.user_id = ? and tasks.project_id = ?";
-$sql_get_count_tasks_in_project = "SELECT COUNT(tasks.project_id) AS count_tasks FROM tasks WHERE tasks.project_id = ? and tasks.user_id = ?";
 $sql_existence_check_tab_in_bd = "SELECT EXISTS(SELECT * FROM tasks WHERE tasks.user_id = ? and tasks.project_id = ?) as result_check";
 
 $categories = db_fetch_data($link, $sql_get_categories, [$user_id]);
@@ -24,8 +21,6 @@ if (isset($_GET['cat'])) {
         exit;
     }
     $task_list = db_fetch_data($link, $sql_get_task_list_by_category, [$user_id, $project_id]);
-} else {
-    $task_list = db_fetch_data($link, $sql_get_task_list, [$user_id]);
 }
 
 $page_content = include_template('index.php', [

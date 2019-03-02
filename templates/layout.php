@@ -20,7 +20,7 @@
             </a>
 
             <div class="main-header__side">
-                <a class="main-header__side-item button button--plus open-modal" href="pages/form-task.html">Добавить задачу</a>
+                <a class="main-header__side-item button button--plus open-modal" href="add_task.php">Добавить задачу</a>
 
                 <div class="main-header__side-item user-menu">
                     <div class="user-menu__image">
@@ -39,11 +39,14 @@
         <div class="content">
             <section class="content__side">
                 <h2 class="content__side-heading">Проекты</h2>
-
                 <nav class="main-navigation">
                     <ul class="main-navigation__list">
                         <?php foreach ($categories as $categories_item) : ;?>
-                        <li class="main-navigation__list-item">
+                        <li class="main-navigation__list-item
+                        <?php if (isset($_GET['cat']) && $_GET['cat'] == $categories_item['id']) :
+                            echo "main-navigation__list-item--active";
+                        endif;?>
+                        ">
                             <a class="main-navigation__list-item-link" href="/?cat=<?=$categories_item['id']?>"><?=$categories_item['title'];?></a>
                             <?php $count_tasks_in_project = db_fetch_data($link, $sql_get_count_tasks_in_project, [$categories_item['id'], $user_id]);?>
                             <span class="main-navigation__list-item-count"><?=$count_tasks_in_project[0]["count_tasks"];?></span>
@@ -71,7 +74,7 @@
             <p>Веб-приложение для удобного ведения списка дел.</p>
         </div>
 
-        <a class="main-footer__button button button--plus" href="pages/form-task.html">Добавить задачу</a>
+        <a class="main-footer__button button button--plus" href="add_task.php">Добавить задачу</a>
 
         <div class="main-footer__social social">
             <span class="visually-hidden">Мы в соцсетях:</span>

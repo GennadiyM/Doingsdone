@@ -39,11 +39,11 @@
                                     <span class="checkbox__text"><?=esc($item['name_task'])?></span>
                                 </label>
                             </td>
-
-                            <!--                        <td class="task__file">-->
-                            <!--                            <a class="download-link" href="#">Home.psd</a>-->
-                            <!--                        </td>-->
-
+                            <td class="task__file">
+                                <?php if (isset($item['path'])): ?>
+                                    <a class="download-link" href="<?=$item['path']?>"><?="Файл задачи"?></a>
+                                <?php endif; ?>
+                            </td>
                             <td class="task__date"><?=esc(date_arr_in_date_str($item['dt_doing']))?></td>
                         </tr>
                     <?php endforeach; ?>
