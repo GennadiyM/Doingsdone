@@ -136,23 +136,6 @@ function db_fetch_data($link, $sql, $data = [])
 }
 
 /**
- * Добавление новой записи в БД
- *
- * @param $link ресурс соединения
- * @param $sql sql запрос
- * @param array $data массив со значениями
- * @return bool|int|string id последней записи
- */
-function db_insert_data($link, $sql, $data = []) {
-    $stmt = db_get_prepare_stmt($link, $sql, $data);
-    $result = mysqli_stmt_execute($stmt);
-    if ($result) {
-        $result = mysqli_insert_id($link);
-    }
-    return $result;
-}
-
-/**
  * Преобразует дату полученную из БД в другой формат, ecли дата не задана вернет пустую строку
  *
  * @param $string_data дата, полученая из БД
@@ -164,4 +147,17 @@ function date_arr_in_date_str($string_data){
     }
     $int_end_str = date_create($string_data);
     return date_format($int_end_str, "d.m.Y");
+}
+
+/**
+ * Возвращает уникальное имя файла с учетом его расширения
+ *
+ * @param $file_type тип загружаемого файла
+ * @return string уникальное название загружаемого файла и расширение
+ */
+function getFileName($file_type){
+    if ($file_type == "text/plain") {
+        return uniqid() . '.txt';
+    }
+    return uniqid() . "." . pathinfo($_FILES['doc']['name'])['extension'];
 }
