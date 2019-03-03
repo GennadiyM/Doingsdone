@@ -161,3 +161,38 @@ function getFileName($file_type){
     }
     return uniqid() . "." . pathinfo($_FILES['doc']['name'])['extension'];
 }
+
+/**
+ * Добавление новой записи в БД
+ *
+ * @param $link ресурс соединения
+ * @param $sql sql запрос
+ * @param array $data массив со значениями
+ * @return bool|int|string id последней записи
+ */
+function db_insert_data($link, $sql, $data = []) {
+    $stmt = db_get_prepare_stmt($link, $sql, $data);
+    $result = mysqli_stmt_execute($stmt);
+    if ($result) {
+        $result = mysqli_insert_id($link);
+    }
+    return $result;
+}
+
+/**
+ *
+ * Проверяет в базе данных наличи проекта у пользователя, если проекта не будет вернет код ответа 404
+ *
+ * @param $link ресурс соединения
+ * @param $sql_existence_check_tab_in_bd - sql запрос на проверку наличия в бд
+ * @param $user_id id пользователя
+ * @param $project_id id проекта
+ */
+function verification_existence_project($link,$sql_existence_check_tab_in_bd, $user_id, $project_id) {
+    $result_existence_check_tab_in_bd = db_fetch_data($link, $sql_existence_check_tab_in_bd, [$user_id, $project_id]);
+    if ($result_existence_check_tab_in_bd[0]['result_check'] == 0) {
+        http_response_code(404);
+        echo '404 Not Found';
+        exit;
+    }
+}
