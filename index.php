@@ -3,34 +3,89 @@ require_once('data.php');
 require_once('function.php');
 require_once('config.php');
 
-$link = getConnection($db);
 $user_id = 1;
 
-$sql_get_task_list_by_category = "SELECT * FROM tasks WHERE tasks.user_id = ? and tasks.project_id = ?";
-$sql_existence_check_tab_in_bd = "SELECT EXISTS(SELECT * FROM tasks WHERE tasks.user_id = ? and tasks.project_id = ?) as result_check";
+$sql_get_task_list_by_category = "SELECT * FROM tasks WHERE tasks.user_id = ? AND tasks.project_id = ? ORDER BY tasks.dt_create DESC";
+$sql_existence_check_tab_in_bd = "SELECT EXISTS(SELECT * FROM projects WHERE user_id = ? and id = ?) as result_check";
+$sql_get_task_list_today = "SELECT * FROM tasks WHERE user_id = ? and dt_doing > DATE_SUB(CURDATE(), INTERVAL 1 day) AND dt_doing < DATE_ADD(CURDATE(), INTERVAL 1 day) ORDER BY dt_doing DESC";
+$sql_get_task_list_today_by_category = "SELECT * FROM tasks WHERE user_id = ? AND project_id = ? AND dt_doing > DATE_SUB(CURDATE(), INTERVAL 1 day) AND dt_doing < DATE_ADD(CURDATE(), INTERVAL 1 day) ORDER BY dt_doing DESC";
+$sql_get_task_list_tomorrow = "SELECT * FROM tasks WHERE user_id = ? AND dt_doing > CURDATE() AND dt_doing < DATE_ADD(CURDATE(), INTERVAL 2 day)";
+$sql_get_task_list_tomorrow_by_category = "SELECT * FROM tasks WHERE user_id = ? AND project_id = ? AND dt_doing > CURDATE() AND dt_doing < DATE_ADD(CURDATE(), INTERVAL 2 day) ORDER BY dt_doing DESC";
+$sql_get_task_list_overdue = "SELECT * FROM tasks WHERE user_id = ? AND dt_doing <CURDATE() ORDER BY dt_doing DESC";
+$sql_get_task_list_overdue_by_category = "SELECT * FROM tasks WHERE user_id = ? AND project_id = ? AND dt_doing < CURDATE() ORDER BY dt_doing DESC";
+$sql_check_task_done = "UPDATE tasks SET tasks.status = ? WHERE tasks.id = ? and tasks.user_id = ?";
 
 $categories = db_fetch_data($link, $sql_get_categories, [$user_id]);
 $task_list = db_fetch_data($link, $sql_get_task_list, [$user_id]);
 
 if (isset($_GET['cat'])) {
-    $project_id = $_GET['cat'];
-    $result_existence_check_tab_in_bd = db_fetch_data($link, $sql_existence_check_tab_in_bd, [$user_id, $project_id]);
-    if ($result_existence_check_tab_in_bd[0]['result_check'] == 0) {
-        http_response_code(404);
-        echo '404 Not Found';
-        exit;
+    $project_id = esc($_GET['cat']);
+    $request_by_time = [
+        "all" => "all" . "&cat=" . $project_id,
+        "today" => "today" . "&cat=" . $project_id,
+        "tomorrow" => "tomorrow" . "&cat=" . $project_id,
+        "overdue" => "overdue" . "&cat=" . $project_id,
+    ];
+} else {
+    $request_by_time = [
+        "all" => "all",
+        "today" => "today",
+        "tomorrow" => "tomorrow",
+        "overdue" => "overdue",
+    ];
+}
+
+if (isset($_GET["check"])) {
+    $task_id = esc($_GET["task_id"]);
+    $task_status = 0;
+    if ($_GET["check"] == 1) {
+        $task_status = 1;
     }
-    $task_list = db_fetch_data($link, $sql_get_task_list_by_category, [$user_id, $project_id]);
+    $stmt = mysqli_prepare($link, $sql_check_task_done);
+    mysqli_stmt_bind_param($stmt, 'iii', $task_status, $task_id, $user_id);
+    mysqli_stmt_execute($stmt);
+    header("Location: /index.php");
+}
+
+if (isset($_GET['cat']) || isset($_GET['time'])) {
+    if (isset($_GET['cat']) && isset($_GET['time'])) {
+        $project_id = esc($_GET['cat']);
+        verification_existence_project($link, $sql_existence_check_tab_in_bd, $user_id, $project_id);
+        if ($_GET['time'] === 'all') {
+            $task_list = db_fetch_data($link, $sql_get_task_list_by_category, [$user_id, $project_id]);
+        } else if ($_GET['time'] === 'today') {
+            $task_list = db_fetch_data($link, $sql_get_task_list_today_by_category, [$user_id, $project_id]);
+        } else if ($_GET['time'] === 'tomorrow') {
+            $task_list = db_fetch_data($link, $sql_get_task_list_tomorrow_by_category, [$user_id, $project_id]);
+        } else {
+            $task_list = db_fetch_data($link, $sql_get_task_list_overdue_by_category, [$user_id, $project_id]);
+        }
+    } else if (isset($_GET['cat'])) {
+        $project_id = esc($_GET['cat']);
+        verification_existence_project($link, $sql_existence_check_tab_in_bd, $user_id, $project_id);
+        $task_list = db_fetch_data($link, $sql_get_task_list_by_category, [$user_id, $project_id]);
+    } else {
+        if ($_GET['time'] === 'all') {
+            $task_list = db_fetch_data($link, $sql_get_task_list, [$user_id]);
+        } else if ($_GET['time'] === 'today') {
+            $task_list = db_fetch_data($link, $sql_get_task_list_today, [$user_id]);
+        } else if ($_GET['time'] === 'tomorrow') {
+            $task_list = db_fetch_data($link, $sql_get_task_list_tomorrow, [$user_id]);
+        } else {
+            $task_list = db_fetch_data($link, $sql_get_task_list_overdue, [$user_id]);
+        }
+    }
 }
 
 $page_content = include_template('index.php', [
+    'request_by_time' => $request_by_time,
     'task_list' => $task_list,
     'show_complete_tasks' => $show_complete_tasks,
     'time_limit' => $time_limit,
     'class_of_burning_tasks' => $class_of_burning_tasks
 ]);
 
-$page_layout = include_template('layout.php',[
+$page_layout = include_template('layout.php', [
     'categories' => $categories,
     'title' => $title,
     'task_list' => $task_list,
@@ -41,5 +96,3 @@ $page_layout = include_template('layout.php',[
 ]);
 
 print($page_layout);
-
-

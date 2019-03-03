@@ -3,24 +3,42 @@ require_once('data.php');
 require_once('function.php');
 require_once('config.php');
 
-$link = getConnection($db);
 $user_id = 1;
 
-$sql_insert_new_task = "INSERT INTO tasks (user_id, project_id, name_task, dt_doing, status, path) VALUES ($user_id, ?, ?, ?, 0, ?)";
+$sql_insert_new_task = "INSERT INTO tasks (user_id, project_id, name_task, dt_doing, status, path) VALUES (?, ?, ?, ?, ?, ?)";
+$sql_insert_new_task_without_file = "INSERT INTO tasks (user_id, project_id, name_task, dt_doing, status) VALUES (?, ?, ?, ?, ?)";
+$sql_insert_new_task_without_date = "INSERT INTO tasks (user_id, project_id, name_task, status, path) VALUES (?, ?, ?, ?, ?)";
+$sql_insert_new_task_without_file_and_date = "INSERT INTO tasks (user_id, project_id, name_task, status) VALUES (?, ?, ?, ?)";
 $sql_get_task_list_by_category = "SELECT * FROM tasks WHERE tasks.user_id = ? and tasks.project_id = ?";
+$sql_existence_check_project_in_bd = "SELECT EXISTS(SELECT * FROM projects WHERE projects.user_id = ? and projects.id = ?) as result_check";
 
 $categories = db_fetch_data($link, $sql_get_categories, [$user_id]);
 $task_list = db_fetch_data($link, $sql_get_task_list, [$user_id]);
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $form = $_POST;
-//    var_dump($_POST['date']);
     $errors = [];
+    $dt_today = strtotime(date("d.m.Y"));
+    $dt_doing = NULL;
+    if(!empty($_POST["date"])){
+        $str_dt_doing = strtotime($_POST["date"]);
+        $dt_doing = date("Y.m.d", $str_dt_doing);
+        $different_date = $str_dt_doing - $dt_today;
+        if ($different_date < 0) {
+            $errors['date'] = 'Дата не должна быть из прошлого';
+            $dt_doing = NULL;
+        }
+    }
     if (empty($_POST['name'])) {
         $errors['name'] = 'Это поле надо заполнить';
     }
     if (empty($_POST['project'])) {
         $errors['project'] = 'Создайте проект';
+    } else {
+        $id_project = esc($_POST['project']);
+        $count_project = db_fetch_data($link, $sql_existence_check_project_in_bd, [$user_id, $id_project]);
+        if ($count_project[0]['result_check'] === 0) {
+            $errors['project'] = 'Такой проект не существует';
+        }
     }
     if ($_FILES['doc']['name']) {
         $tmp_name = $_FILES['doc']['tmp_name'];
@@ -34,18 +52,25 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $errors['file'] = 'Только txt файлы и картинки';
         }
     } else {
-        $path = null;
+        $path = NULL;
     }
     if(!count($errors)) {
-        $project_id = $_POST['project'];
-        $name_task = $_POST['name'];;
-        $dt_doing = $_POST['date'];;
-        if (empty($_POST['date'])) {
-            $dt_doing = null;
+        $status = 0;
+        $project_id = esc($_POST['project']);
+        $name_task = esc($_POST['name']);
+        if (is_null($path) || is_null($dt_doing)) {
+            if (is_null($path) && is_null($dt_doing)) {
+                $id_new_tasks = db_insert_data($link, $sql_insert_new_task_without_file_and_date, [$user_id, $project_id, $name_task, $status]);
+                header("Location: /index.php");
+            } else if (is_null($path)) {
+                $id_new_tasks = db_insert_data($link, $sql_insert_new_task_without_file, [$user_id, $project_id, $name_task, $dt_doing, $status]);
+                header("Location: /index.php");
+            } else {
+                $id_new_tasks = db_insert_data($link, $sql_insert_new_task_without_date, [$user_id, $project_id, $name_task, $status, $path]);
+                header("Location: /index.php");
+            }
         }
-        $stmt = mysqli_prepare($link, $sql_insert_new_task);
-        mysqli_stmt_bind_param($stmt, 'isss', $project_id, $name_task, $dt_doing, $path);
-        mysqli_stmt_execute($stmt);
+        $id_new_tasks = db_insert_data($link, $sql_insert_new_task, [$user_id, $project_id, $name_task, $dt_doing, $status, $path]);
         header("Location: /index.php");
     }
 }

@@ -6,15 +6,28 @@
 
                     <input class="search-form__submit" type="submit" name="" value="Искать">
                 </form>
-
                 <div class="tasks-controls">
                     <nav class="tasks-switch">
-                        <a href="/" class="tasks-switch__item tasks-switch__item--active">Все задачи</a>
-                        <a href="/" class="tasks-switch__item">Повестка дня</a>
-                        <a href="/" class="tasks-switch__item">Завтра</a>
-                        <a href="/" class="tasks-switch__item">Просроченные</a>
+                        <a href="/?time=<?=$request_by_time['all'];?>" class="tasks-switch__item
+                        <?php if (isset($_GET['time']) && $_GET['time'] == 'all' || !isset($_GET['time'])) :
+                            echo "tasks-switch__item--active";
+                        endif;?>">Все задачи</a>
+                        <a href="/?time=<?=$request_by_time['today'];?>" class="tasks-switch__item
+                        <?php if (isset($_GET['time']) && $_GET['time'] == 'today') :
+                            echo "tasks-switch__item--active";
+                        endif;?>">Повестка дня</a>
+                        <a href="/?time=<?=$request_by_time['tomorrow'];?>" class="tasks-switch__item
+                        <?php if (isset($_GET['time']) && $_GET['time'] == 'tomorrow') :
+                            echo "tasks-switch__item--active";
+                        endif;?>">Завтра</a>
+                        <a href="/?time=<?=$request_by_time['overdue'];?>" class="tasks-switch__item
+                        <?php if (isset($_GET['time']) && $_GET['time'] == 'overdue') :
+                            echo "tasks-switch__item--active";
+                        endif;?>">Просроченные</a>
                     </nav>
-
+                    <?php if (isset($_GET['cat']) && $_GET['cat'] == $categories_item['id']) :
+                        echo "main-navigation__list-item--active";
+                    endif;?>
                     <label class="checkbox">
                         <input class="checkbox__input visually-hidden show_completed" type="checkbox"
                             <?php if ($show_complete_tasks == 1) : echo "checked";
@@ -32,7 +45,7 @@
                         endif; ?>">
                             <td class="task__select">
                                 <label class="checkbox task__checkbox">
-                                    <input class="checkbox__input visually-hidden task__checkbox" type="checkbox" value="1"
+                                    <input class="checkbox__input visually-hidden task__checkbox" type="checkbox" value="<?=$item['id'];?>"
                                         <?php if ($item['status'] == '1') : echo "checked";
                                         endif; ?>
                                     >
