@@ -1,6 +1,10 @@
 <?php
+session_start();
 $title = "Дела в порядке";
 $show_complete_tasks = 1;
+if(isset($_SESSION['user'])) {
+    $show_complete_tasks = $_SESSION['is_show_completed'];
+}
 $time_limit = 24;
 $class_of_burning_tasks = "task--important";
 $sql_get_categories = "SELECT projects.title, projects.id FROM projects WHERE projects.user_id = ?";
