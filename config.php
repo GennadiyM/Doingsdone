@@ -7,3 +7,4 @@ $db = [
     'password' => '',
 ];
 $link = getConnection($db);
+mysqli_set_charset($link, "utf8");

@@ -29,13 +29,13 @@
                     </div>
 
                     <div class="user-menu__data">
-                        <p>Константин</p>
+                        <p><?=$_SESSION['user']['name']?></p>
 
-                        <a href="#">Выйти</a>
+                        <a href="exit.php">Выйти</a>
                     </div>
                 </div>
                 <?php else: ?>
-                <a class="main-header__side-item button button--transparent" href="form-authorization.html">Войти</a>
+                <a class="main-header__side-item button button--transparent" href="authorization.php">Войти</a>
                 <?php endif; ?>
             </div>
         </header>
@@ -61,10 +61,10 @@
                 </nav>
 
                 <a class="button button--transparent button--plus content__side-button"
-                   href="add_project.php" target="project_add">Добавить проект</a>
+                   href="add_project.php">Добавить проект</a>
                 <?php else: ?>
                     <p class="content__side-info">Если у вас уже есть аккаунт, авторизуйтесь на сайте</p>
-                    <a class="button button--transparent content__side-button" href="form-authorization.html">Войти</a>
+                    <a class="button button--transparent content__side-button" href="authorization.php">Войти</a>
                 <?php endif; ?>
             </section>
 
@@ -82,9 +82,9 @@
 
             <p>Веб-приложение для удобного ведения списка дел.</p>
         </div>
-
+        <?php if (isset($_SESSION['user'])) : ?>
         <a class="main-footer__button button button--plus" href="add_task.php">Добавить задачу</a>
-
+        <?php endif;?>
         <div class="main-footer__social social">
             <span class="visually-hidden">Мы в соцсетях:</span>
             <a class="social__link social__link--facebook" href="#">

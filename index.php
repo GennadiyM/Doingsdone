@@ -3,7 +3,12 @@ require_once('data.php');
 require_once('function.php');
 require_once('config.php');
 
-$user_id = 1;
+if (isset($_SESSION['user'])) {
+   $user_id = $_SESSION['user']['id'];
+} else {
+    header("Location: /guest.php");
+    exit();
+}
 
 $sql_get_task_list_by_category = "SELECT * FROM tasks WHERE tasks.user_id = ? AND tasks.project_id = ? ORDER BY tasks.dt_create DESC";
 $sql_existence_check_tab_in_bd = "SELECT EXISTS(SELECT * FROM projects WHERE user_id = ? and id = ?) as result_check";
@@ -44,7 +49,8 @@ if (isset($_GET["check"])) {
     $stmt = mysqli_prepare($link, $sql_check_task_done);
     mysqli_stmt_bind_param($stmt, 'iii', $task_status, $task_id, $user_id);
     mysqli_stmt_execute($stmt);
-    header("Location: /index.php");
+    header('Location: ' . ($_SERVER['HTTP_REFERER']) ?? '/');
+    exit;
 }
 
 if (isset($_GET['cat']) || isset($_GET['time'])) {
@@ -75,6 +81,12 @@ if (isset($_GET['cat']) || isset($_GET['time'])) {
             $task_list = db_fetch_data($link, $sql_get_task_list_overdue, [$user_id]);
         }
     }
+}
+
+if (isset($_GET['show_completed'])) {
+    $_SESSION['is_show_completed'] = (int)$_GET['show_completed'];
+    header('Location: ' . ($_SERVER['HTTP_REFERER']) ?? '/');
+    exit();
 }
 
 $page_content = include_template('index.php', [

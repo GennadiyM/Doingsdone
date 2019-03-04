@@ -8,7 +8,7 @@ CREATE TABLE `users` (
 	`id` int NOT NULL AUTO_INCREMENT,
 	`name` char(128 ) NOT NULL,
 	`email` char(128) NOT NULL UNIQUE,
-	`password` char(64) NOT NULL,
+	`password` char(255) NOT NULL,
 	`dt_add` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	PRIMARY KEY (`id`)
 );
