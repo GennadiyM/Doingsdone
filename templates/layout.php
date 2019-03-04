@@ -59,7 +59,6 @@
                         <?php endforeach; ?>
                     </ul>
                 </nav>
-
                 <a class="button button--transparent button--plus content__side-button"
                    href="add_project.php">Добавить проект</a>
                 <?php else: ?>
