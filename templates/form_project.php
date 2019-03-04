@@ -1,4 +1,3 @@
-
         <h2 class="content__main-heading">Добавление проекта</h2>
 
         <form class="form"  action="" method="post">

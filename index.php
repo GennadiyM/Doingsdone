@@ -92,7 +92,6 @@ if (isset($_GET['show_completed'])) {
 
 $search_in_get = $_GET['search'] ?? '';
 
-
 if ($search_in_get) {
     $search = esc(trim($search_in_get));
     if (empty($search)) {

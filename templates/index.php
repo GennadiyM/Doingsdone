@@ -1,4 +1,3 @@
-
                 <h2 class="content__main-heading">Список задач</h2>
 
                 <form class="search-form" action="index.php" method="get">

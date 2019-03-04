@@ -10,7 +10,6 @@ $sql_existence_check_project_in_bd = "SELECT EXISTS(SELECT * FROM projects WHERE
 $errors = '';
 $title_project = '';
 
-
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (empty($_POST['title'])) {
         $errors = 'Это поле надо заполнить';
