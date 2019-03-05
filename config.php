@@ -5,5 +5,3 @@ $db = [
     'user' => 'root',
     'password' => '',
 ];
-
-
