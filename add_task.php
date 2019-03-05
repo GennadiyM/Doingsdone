@@ -2,13 +2,7 @@
 require_once('data.php');
 require_once('function.php');
 require_once('config.php');
-
-if (isset($_SESSION['user'])) {
-    $user_id = $_SESSION['user'];
-} else {
-    header("Location: /guest.php");
-    exit();
-}
+require_once('availability_check.php');
 
 $sql_insert_new_task = "INSERT INTO tasks (user_id, project_id, name_task, dt_doing, status, path) VALUES (?, ?, ?, ?, ?, ?)";
 $sql_insert_new_task_without_file = "INSERT INTO tasks (user_id, project_id, name_task, dt_doing, status) VALUES (?, ?, ?, ?, ?)";
@@ -18,10 +12,10 @@ $sql_get_task_list_by_category = "SELECT * FROM tasks WHERE tasks.user_id = ? an
 $sql_existence_check_project_in_bd = "SELECT EXISTS(SELECT * FROM projects WHERE projects.user_id = ? and projects.id = ?) as result_check";
 
 $categories = db_fetch_data($link, $sql_get_categories, [$user_id]);
-$task_list = db_fetch_data($link, $sql_get_task_list, [$user_id]);
+$errors = [];
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $errors = [];
+
     $dt_today = strtotime(date("d.m.Y"));
     $dt_doing = NULL;
     if(!empty($_POST["date"])){
@@ -59,7 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     } else {
         $path = NULL;
     }
-    if(!count($errors)) {
+    if(empty($errors['name']) && empty($errors['project']) && empty($errors['file']) && empty($errors['date'])) {
         $status = 0;
         $project_id = esc($_POST['project']);
         $name_task = esc($_POST['name']);
@@ -67,16 +61,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             if (is_null($path) && is_null($dt_doing)) {
                 $id_new_tasks = db_insert_data($link, $sql_insert_new_task_without_file_and_date, [$user_id, $project_id, $name_task, $status]);
                 header("Location: /index.php");
+                exit();
             } else if (is_null($path)) {
                 $id_new_tasks = db_insert_data($link, $sql_insert_new_task_without_file, [$user_id, $project_id, $name_task, $dt_doing, $status]);
                 header("Location: /index.php");
+                exit();
             } else {
                 $id_new_tasks = db_insert_data($link, $sql_insert_new_task_without_date, [$user_id, $project_id, $name_task, $status, $path]);
                 header("Location: /index.php");
+                exit();
             }
         }
         $id_new_tasks = db_insert_data($link, $sql_insert_new_task, [$user_id, $project_id, $name_task, $dt_doing, $status, $path]);
         header("Location: /index.php");
+        exit();
     }
 }
 
@@ -85,7 +83,8 @@ $page_content = include_template('form_task.php', [
     'categories' => $categories,
 ]);
 
-$page_layout = include_template('layout.php',[
+$page_layout = include_template('layout.php', [
+    'user_name' => $user_name[0]['name'],
     'categories' => $categories,
     'title' => $title,
     'task_list' => $task_list,

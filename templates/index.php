@@ -24,9 +24,6 @@
                             echo "tasks-switch__item--active";
                         endif;?>">Просроченные</a>
                     </nav>
-                    <?php if (isset($_GET['cat']) && $_GET['cat'] == $categories_item['id']) :
-                        echo "main-navigation__list-item--active";
-                    endif;?>
                     <label class="checkbox">
                         <input class="checkbox__input visually-hidden show_completed" type="checkbox"
                             <?php if ($show_complete_tasks == 1) : echo "checked";

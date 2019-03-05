@@ -2,18 +2,17 @@
 require_once('data.php');
 require_once('function.php');
 require_once('config.php');
-
-if (isset($_SESSION['user'])) {
-    header("Location: /index.php");
-    exit();
-}
+require_once('absence _check.php');
 
 $sql_check_email = "SELECT id FROM users WHERE users.email = ?";
 $sql_user = "SELECT * FROM users WHERE email = ?";
 
 $tpl_data = [
     'errors' => [],
-    'values' => []
+    'values' => [
+        'name' => '',
+        'email' => '',
+    ]
 ];
 
 $categories = [];
@@ -35,11 +34,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $errors['invalid_email'] = 'Некорректный email';
         } else {
             $check_email = db_fetch_data($link, $sql_check_email, [$email]);
-            if (count($check_email) == 0) {
+            if (count($check_email) === 0) {
                 $errors['double_email'] = 'Пользователь с таким email не найден';
             }
         }
     }
+
 
     if (!count($errors)) {
         $user = db_fetch_data($link, $sql_user, [$email]);

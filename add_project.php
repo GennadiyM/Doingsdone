@@ -2,13 +2,7 @@
 require_once('data.php');
 require_once('function.php');
 require_once('config.php');
-
-if (isset($_SESSION['user'])) {
-    $user_id = $_SESSION['user'];
-} else {
-    header("Location: /guest.php");
-    exit();
-}
+require_once('availability_check.php');
 
 $categories = db_fetch_data($link, $sql_get_categories, [$user_id]);
 $sql_insert_new_project = "INSERT INTO projects (user_id, title) VALUES (?, ?)";
@@ -31,6 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (!empty($errors) === false) {
         $id_new_project = db_insert_data($link, $sql_insert_new_project, [$user_id, $title_project]);
         header("Location: /add_project.php");
+        exit();
     }
 }
 
@@ -38,7 +33,8 @@ $page_content = include_template('form_project.php', [
     'errors' => $errors,
 ]);
 
-$page_layout = include_template('layout.php',[
+$page_layout = include_template('layout.php', [
+    'user_name' => $user_name[0]['name'],
     'categories' => $categories,
     'title' => $title,
     'task_list' => $task_list,

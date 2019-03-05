@@ -2,13 +2,7 @@
 require_once('data.php');
 require_once('function.php');
 require_once('config.php');
-
-if (isset($_SESSION['user'])) {
-   $user_id = $_SESSION['user'];
-} else {
-    header("Location: /guest.php");
-    exit();
-}
+require_once('availability_check.php');
 
 $sql_get_task_list_by_category = "SELECT * FROM tasks WHERE tasks.user_id = ? AND tasks.project_id = ? ORDER BY tasks.dt_create DESC";
 $sql_existence_check_tab_in_bd = "SELECT EXISTS(SELECT * FROM projects WHERE user_id = ? and id = ?) as result_check";
@@ -20,11 +14,10 @@ $sql_get_task_list_overdue = "SELECT * FROM tasks WHERE user_id = ? AND dt_doing
 $sql_get_task_list_overdue_by_category = "SELECT * FROM tasks WHERE user_id = ? AND project_id = ? AND dt_doing < CURDATE() ORDER BY dt_doing DESC";
 $sql_check_task_done = "UPDATE tasks SET tasks.status = ? WHERE tasks.id = ? and tasks.user_id = ?";
 $sql_search_tasks = "SELECT * FROM tasks WHERE MATCH(tasks.name_task) AGAINST(?) and tasks.user_id = ?";
-$sql_get_user_name = "SELECT name FROM users WHERE id = ?";
 
 $categories = db_fetch_data($link, $sql_get_categories, [$user_id]);
-$task_list = db_fetch_data($link, $sql_get_task_list, [$user_id]);
-$user_name = db_fetch_data($link, $sql_get_user_name, [$user_id]);
+
+$error = '';
 
 if (isset($_GET['cat'])) {
     $project_id = esc($_GET['cat']);
@@ -46,7 +39,7 @@ if (isset($_GET['cat'])) {
 if (isset($_GET["check"])) {
     $task_id = esc($_GET["task_id"]);
     $task_status = 0;
-    if ($_GET["check"] == 1) {
+    if ($_GET["check"] === '1') {
         $task_status = 1;
     }
     $stmt = mysqli_prepare($link, $sql_check_task_done);

@@ -1,12 +1,8 @@
 <?php
 require_once('data.php');
 require_once('function.php');
-require_once('config.php');
+require_once('absence _check.php');
 
-if (isset($_SESSION['user'])) {
-    header("Location: /index.php");
-    exit();
-}
 
 $page_guest = include_template('guest.php', [
     'title' => $title,

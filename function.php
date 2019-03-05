@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Подключает шаблон, находящийся в заданной директории
  *
@@ -50,9 +51,8 @@ function check_burning_tasks($date, $time_limit) {
     $hours_to_complete = floor(($date_of_completion - $time_now)/$second_in_hour);
     if ($hours_to_complete <= $time_limit) {
         return true;
-    } else {
-        return false;
     }
+    return false;
 }
 
 /**

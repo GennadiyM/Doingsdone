@@ -2,18 +2,17 @@
 require_once('data.php');
 require_once('function.php');
 require_once('config.php');
-
-if (isset($_SESSION['user'])) {
-    header("Location: /index.php");
-    exit();
-}
+require_once('absence _check.php');
 
 $sql_check_email = "SELECT id FROM users WHERE users.email = ?";
 $sql_new_users = "INSERT INTO users (name, email, password) VALUES (?, ?, ?)";
 
 $tpl_data = [
     'errors' => [],
-    'values' => []
+    'values' => [
+        'name' => '',
+        'email' => '',
+    ]
 ];
 
 $categories = [];
