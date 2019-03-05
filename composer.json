@@ -1,0 +1,7 @@
+{
+    "name": "maksimov/doingdone",
+    "description": "htmlAcademy",
+    "require": {
+        "swiftmailer/swiftmailer": "v6.1.3"
+    }
+}
