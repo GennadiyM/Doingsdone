@@ -46,7 +46,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         if (password_verify($form['password'], $user[0]['password'])) {
             unset($user[0]['password']);
             unset($user[0]['dt_add']);
-            $_SESSION['user'] = $user[0];
+            unset($user[0]['email']);
+            unset($user[0]['name']);
+            $_SESSION['user'] = $user[0]['id'];
             header("Location: /index.php");
             exit();
         } else {

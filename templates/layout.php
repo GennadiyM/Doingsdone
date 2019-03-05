@@ -29,7 +29,7 @@
                     </div>
 
                     <div class="user-menu__data">
-                        <p><?=$_SESSION['user']['name']?></p>
+                        <p><?=$user_name?></p>
 
                         <a href="exit.php">Выйти</a>
                     </div>

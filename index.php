@@ -4,7 +4,7 @@ require_once('function.php');
 require_once('config.php');
 
 if (isset($_SESSION['user'])) {
-   $user_id = $_SESSION['user']['id'];
+   $user_id = $_SESSION['user'];
 } else {
     header("Location: /guest.php");
     exit();
@@ -20,9 +20,11 @@ $sql_get_task_list_overdue = "SELECT * FROM tasks WHERE user_id = ? AND dt_doing
 $sql_get_task_list_overdue_by_category = "SELECT * FROM tasks WHERE user_id = ? AND project_id = ? AND dt_doing < CURDATE() ORDER BY dt_doing DESC";
 $sql_check_task_done = "UPDATE tasks SET tasks.status = ? WHERE tasks.id = ? and tasks.user_id = ?";
 $sql_search_tasks = "SELECT * FROM tasks WHERE MATCH(tasks.name_task) AGAINST(?) and tasks.user_id = ?";
+$sql_get_user_name = "SELECT name FROM users WHERE id = ?";
 
 $categories = db_fetch_data($link, $sql_get_categories, [$user_id]);
 $task_list = db_fetch_data($link, $sql_get_task_list, [$user_id]);
+$user_name = db_fetch_data($link, $sql_get_user_name, [$user_id]);
 
 if (isset($_GET['cat'])) {
     $project_id = esc($_GET['cat']);
@@ -114,6 +116,7 @@ $page_content = include_template('index.php', [
 ]);
 
 $page_layout = include_template('layout.php', [
+    'user_name' => $user_name[0]['name'],
     'categories' => $categories,
     'title' => $title,
     'task_list' => $task_list,
