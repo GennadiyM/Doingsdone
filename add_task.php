@@ -3,7 +3,12 @@ require_once('data.php');
 require_once('function.php');
 require_once('config.php');
 
-$user_id = 1;
+if (isset($_SESSION['user'])) {
+    $user_id = $_SESSION['user'];
+} else {
+    header("Location: /guest.php");
+    exit();
+}
 
 $sql_insert_new_task = "INSERT INTO tasks (user_id, project_id, name_task, dt_doing, status, path) VALUES (?, ?, ?, ?, ?, ?)";
 $sql_insert_new_task_without_file = "INSERT INTO tasks (user_id, project_id, name_task, dt_doing, status) VALUES (?, ?, ?, ?, ?)";
@@ -91,5 +96,3 @@ $page_layout = include_template('layout.php',[
 ]);
 
 print($page_layout);
-
-

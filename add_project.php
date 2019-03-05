@@ -3,13 +3,18 @@ require_once('data.php');
 require_once('function.php');
 require_once('config.php');
 
-$user_id = 1;
+if (isset($_SESSION['user'])) {
+    $user_id = $_SESSION['user'];
+} else {
+    header("Location: /guest.php");
+    exit();
+}
+
 $categories = db_fetch_data($link, $sql_get_categories, [$user_id]);
 $sql_insert_new_project = "INSERT INTO projects (user_id, title) VALUES (?, ?)";
 $sql_existence_check_project_in_bd = "SELECT EXISTS(SELECT * FROM projects WHERE projects.user_id = ? and projects.title = ?) as result_check";
 $errors = '';
 $title_project = '';
-
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (empty($_POST['title'])) {
