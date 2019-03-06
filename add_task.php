@@ -39,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $errors['project'] = 'Такой проект не существует';
         }
     }
-    if ($_FILES['doc']['name']) {
+    if ($_FILES['doc']['name'] ?? false) {
         $tmp_name = $_FILES['doc']['tmp_name'];
         $finfo = finfo_open(FILEINFO_MIME_TYPE);
         $file_type = finfo_file($finfo, $tmp_name);
@@ -57,20 +57,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $status = 0;
         $project_id = esc($_POST['project']);
         $name_task = esc($_POST['name']);
-        if (is_null($path) || is_null($dt_doing)) {
-            if (is_null($path) && is_null($dt_doing)) {
-                $id_new_tasks = db_insert_data($link, $sql_insert_new_task_without_file_and_date, [$user_id, $project_id, $name_task, $status]);
-                header("Location: /index.php");
-                exit();
-            } else if (is_null($path)) {
-                $id_new_tasks = db_insert_data($link, $sql_insert_new_task_without_file, [$user_id, $project_id, $name_task, $dt_doing, $status]);
-                header("Location: /index.php");
-                exit();
-            } else {
-                $id_new_tasks = db_insert_data($link, $sql_insert_new_task_without_date, [$user_id, $project_id, $name_task, $status, $path]);
-                header("Location: /index.php");
-                exit();
-            }
+        if (is_null($path) && is_null($dt_doing)) {
+            $id_new_tasks = db_insert_data($link, $sql_insert_new_task_without_file_and_date, [$user_id, $project_id, $name_task, $status]);
+            header("Location: /index.php");
+            exit();
+        }
+        if (is_null($path)) {
+            $id_new_tasks = db_insert_data($link, $sql_insert_new_task_without_file, [$user_id, $project_id, $name_task, $dt_doing, $status]);
+            header("Location: /index.php");
+            exit();
+        }
+        if (is_null($dt_doing)) {
+            $id_new_tasks = db_insert_data($link, $sql_insert_new_task_without_date, [$user_id, $project_id, $name_task, $status, $path]);
+            header("Location: /index.php");
+            exit();
         }
         $id_new_tasks = db_insert_data($link, $sql_insert_new_task, [$user_id, $project_id, $name_task, $dt_doing, $status, $path]);
         header("Location: /index.php");

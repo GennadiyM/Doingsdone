@@ -3,7 +3,7 @@
           <div class="form__row">
               <label class="form__label" for="email">E-mail <sup>*</sup></label>
               <input class="form__input  <?php if(isset($tpl_data['errors']['email'])) : echo 'form__input--error'; endif; ?>"
-                     type="text" name="email" id="email" value="<?=$tpl_data['values']['email']?>" placeholder="Введите e-mail">
+                     type="text" name="email" id="email" value="<?=($tpl_data['values']['email']) ?? '';?>" placeholder="Введите e-mail">
               <?php if(isset($tpl_data['errors']['email'])) :?>
                   <p class="form__message"><?=$tpl_data['errors']['email']?></p>
               <?php endif; ?>

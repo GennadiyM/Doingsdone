@@ -4,7 +4,7 @@
               <label class="form__label" for="email">E-mail <sup>*</sup></label>
               <input class="form__input  <?php if(isset($tpl_data['errors']['email']) or isset($tpl_data['errors']
                       ['double_email']) or isset($tpl_data['errors']['invalid_email'])) : echo 'form__input--error';
-              endif; ?>" type="text" name="email" id="email" value="<?=$tpl_data['values']['email']?>" placeholder="Введите e-mail">
+              endif; ?>" type="text" name="email" id="email" value="<?=($tpl_data['values']['email']) ?? '';?>" placeholder="Введите e-mail">
               <?php if(isset($tpl_data['errors']['email'])) :?>
                 <p class="form__message"><?=$tpl_data['errors']['email']?></p>
               <?php endif; ?>
@@ -28,7 +28,7 @@
             <div class="form__row">
               <label class="form__label" for="name">Имя <sup>*</sup></label>
               <input class="form__input <?php if(isset($tpl_data['errors']['name'])) : echo 'form__input--error';
-              endif; ?>" type="text" name="name" id="name" value="<?=$tpl_data['values']['name']?>" placeholder="Введите имя">
+              endif; ?>" type="text" name="name" id="name" value="<?=($tpl_data['values']['name']) ?? '';?>" placeholder="Введите имя">
 
                     <p class="form__message"> <?php if(isset($tpl_data['errors']['name'])) :?>
                 <p class="form__message">Введите имя</p>

@@ -18,7 +18,6 @@ $tpl_data = [
 $categories = [];
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-
     $form = $_POST;
     $errors = [];
     $reg_fields = ['email', 'password'];
@@ -39,8 +38,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             }
         }
     }
-
-
     if (!count($errors)) {
         $user = db_fetch_data($link, $sql_user, [$email]);
         if (password_verify($form['password'], $user[0]['password'])) {
